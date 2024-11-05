@@ -27,11 +27,12 @@ ADD https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${S
 RUN chmod 644 /usr/share/jenkins/swarm-client-${SWARM_CLIENT_VERSION}.jar
 
 # Install Node Version Manager (NVM), Node version 20.18.0 LTS
-#ENV NVM_DIR=/usr/local/nvm
-#RUN mkdir $NVM_DIR
+ENV NVM_DIR=/usr/local/nvm
+RUN mkdir $NVM_DIR
 ENV NODE_VERSION=v20.18.0
 RUN curl --silent -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
-RUN nvm install $NODE_VERSION \
+RUN source $NVM_DIR/nvm.sh \
+  && nvm install $NODE_VERSION \
   && nvm alias default $NODE_VERSION \
   && nvm install node \
   && nvm use default

@@ -6,7 +6,7 @@ pipeline {
   }
   environment {
     project = 'jenkins-swarm-jdk21'
-    tag = 'default'\
+    tag = 'default'
     commitNum = 'default'
   }
   stages{

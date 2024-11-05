@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-swarm-21
+  namespace: devops-tools
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      workload.user.cattle.io/workloadselector: apps.deployment-devops-tools-jenkins-swarm-21
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        workload.user.cattle.io/workloadselector: apps.deployment-devops-tools-jenkins-swarm-21
+      name: jenkins-swarm-21
+      namespace: devops-tools
+    spec:
+      affinity: {}
+      containers:
+        - env:
+            - name: JENKINS_HOST
+              value: jenkins-service.devops-tools.svc.cluster.local
+            - name: JENKINS_PORT
+              value: '8080'
+            - name: JENKINS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: jenkins-creds
+                  optional: false
+            - name: JENKINS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: jenkins-creds
+                  optional: false
+          image: minotaur423/jenkins-swarm-21:v3.47-1
+          imagePullPolicy: Always
+          name: jenkins-swarm-21
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /var/jenkins_home
+              name: data
+            - mountPath: /var/run/docker.sock
+              name: docker-socket
+              readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: jenkins-admin
+      serviceAccountName: jenkins-admin
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: jenkins-pv-claim
+        - hostPath:
+            path: /run/docker.sock
+            type: Socket
+          name: docker-socket

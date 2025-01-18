@@ -41,7 +41,7 @@ spec:
                   key: password
                   name: jenkins-creds
                   optional: false
-          image: artifactoryu.harvey.lcl/docker/jenkins-swarm-jdk21:main.afebd15
+          image: artifactory.home.lcl/docker-local/jenkins-swarm-jdk21:main.a14e30d
           imagePullPolicy: Always
           name: jenkins-swarm-21
           resources: {}

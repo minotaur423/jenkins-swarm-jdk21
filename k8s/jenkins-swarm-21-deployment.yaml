@@ -41,7 +41,9 @@ spec:
                   key: password
                   name: jenkins-creds
                   optional: false
-          image: artifactory.home.lcl/docker-local/jenkins-swarm-jdk21:main.a14e30d
+            - name: SWARM_EXECUTORS
+              value: '2'
+          image: artifactory.home.lcl/docker-local/jenkins-swarm-jdk21:main.96c0413
           imagePullPolicy: Always
           name: jenkins-swarm-21
           resources: {}
@@ -59,6 +61,8 @@ spec:
               name: docker-socket
               readOnly: true
       dnsPolicy: ClusterFirst
+      imagePullSecrets:
+        - name: reg-creds
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}

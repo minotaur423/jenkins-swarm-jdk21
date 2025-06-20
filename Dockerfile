@@ -27,15 +27,15 @@ ADD https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${S
 RUN chmod 644 /usr/share/jenkins/swarm-client-${SWARM_CLIENT_VERSION}.jar
 
 # Install Node Version Manager (NVM), Node version 20.18.0 LTS
-ENV NVM_DIR=/usr/local/nvm
-RUN mkdir $NVM_DIR
-ENV NODE_VERSION=v20.18.0
-RUN curl --silent -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-RUN source $NVM_DIR/nvm.sh \
-  && nvm install $NODE_VERSION \
-  && nvm alias default $NODE_VERSION \
-  && nvm install node \
-  && nvm use default
+#ENV NVM_DIR=/usr/local/nvm
+#RUN mkdir $NVM_DIR
+#ENV NODE_VERSION=v20.18.0
+#RUN curl --silent -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+#RUN source $NVM_DIR/nvm.sh \
+#  && nvm install $NODE_VERSION \
+#  && nvm alias default $NODE_VERSION \
+#  && nvm install node \
+#  && nvm use default
 
 # Install Yarn
 RUN apt-get update && apt-get install -y apt-utils apt-transport-https
@@ -43,24 +43,13 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get -q -y install yarn
 
-# Install Google Chrome
-RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
-RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-RUN apt-get update && apt-get install -y google-chrome-stable
-
 # Install Docker
-
 RUN apt-get update -qq
 RUN apt-get install -qqy apt-transport-https ca-certificates gnupg2 software-properties-common
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+RUN add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
 RUN apt-get update -qq
 RUN apt-get install -y docker-ce docker-ce-cli containerd.io
-
-# Install Cosign
-RUN cd /var/tmp && wget "https://github.com/sigstore/cosign/releases/download/v2.0.0/cosign-linux-amd64" 
-RUN mv /var/tmp/cosign-linux-amd64 /usr/local/bin/cosign
-RUN chmod +x /usr/local/bin/cosign
 
 USER jenkins
 
